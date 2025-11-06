@@ -10,7 +10,6 @@ rpm-ostree override remove waydroid waydroid-selinux || true
 # Remove Emulators (only remove if they exist)
 rpm-ostree override remove \
     retroarch \
-    dolphin-emu \
     pcsx2 \
     duckstation \
     ppsspp \
@@ -37,7 +36,6 @@ dnf5 install -y tmux
 
 # Enable Hyprland COPR repository
 dnf5 -y copr enable solopasha/hyprland
-dnf5 -y copr enable erikreider/SwayNotificationCenter
 
 # Core Hyprland components
 dnf5 install -y \
@@ -49,7 +47,6 @@ dnf5 install -y \
 
 # Disable COPRs so they don't end up enabled on the final image
 dnf5 -y copr disable solopasha/hyprland
-dnf5 -y copr disable erikreider/SwayNotificationCenter
 
 # Status bar & launcher
 dnf5 install -y \
@@ -59,14 +56,12 @@ dnf5 install -y \
 # Terminal emulator
 dnf5 install -y kitty
 
-# Essential Wayland utilities
+# Essential Wayland utilities (removed cliphist, wf-recorder - not in Fedora repos)
 dnf5 install -y \
     wl-clipboard \
-    cliphist \
     grim \
     slurp \
-    swappy \
-    wf-recorder
+    swappy
 
 # Notifications
 dnf5 install -y mako
@@ -79,14 +74,12 @@ dnf5 install -y \
     network-manager-applet \
     blueman
 
-# Fonts for rice
+# Fonts for rice (these are likely already installed in bazzite-dx, install extra if available)
 dnf5 install -y \
-    google-noto-sans-fonts \
-    google-noto-serif-fonts \
-    google-noto-emoji-fonts \
     fira-code-fonts \
-    jetbrains-mono-fonts \
-    fontawesome-fonts
+    jetbrains-mono-fonts-all \
+    fontawesome-fonts-all \
+    || true
 
 # File manager & viewers (using Dolphin from KDE)
 dnf5 install -y \
