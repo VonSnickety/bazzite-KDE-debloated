@@ -11,7 +11,6 @@ rpm-ostree override remove waydroid waydroid-selinux || true
 rpm-ostree override remove \
     retroarch \
     pcsx2 \
-    duckstation \
     ppsspp \
     snes9x \
     nestopia \
@@ -19,7 +18,6 @@ rpm-ostree override remove \
 
 # Remove VR Support (only remove if they exist)
 rpm-ostree override remove \
-    openxr \
     || true
 
 ### Install packages
@@ -100,40 +98,4 @@ dnf5 install -y \
 
 systemctl enable podman.socket
 
-### Phrolova Theme Implementation
-# Maroon/Red Lycoris color scheme inspired by Phrolova from Wuthering Waves
-# Deploy configuration files to /etc/skel
 
-# Copy Phrolova theme configs to /etc/skel
-mkdir -p /etc/skel/.config
-cp -r /ctx/skel/.config/* /etc/skel/.config/
-
-# Create placeholder for wallpaper
-mkdir -p /etc/skel/.config/hypr
-cat > /etc/skel/.config/hypr/README-WALLPAPER.md << 'EOF'
-# Phrolova Wallpaper Setup
-
-To complete your Phrolova rice, you need to add a wallpaper:
-
-1. Find or create a wallpaper with maroon/red lycoris colors
-2. Save it as: ~/.config/hypr/wallpaper.png
-3. Recommended resolution: 1920x1080 or higher
-
-**Suggested search terms:**
-- "Red lycoris wallpaper"
-- "Maroon aesthetic wallpaper"
-- "Phrolova Wuthering Waves wallpaper"
-- "Dark red flowers wallpaper"
-
-**Temporary solution:**
-If you want to test Hyprland without a custom wallpaper:
-```bash
-# Use a solid color background
-echo "preload = " > ~/.config/hypr/hyprpaper.conf
-echo "wallpaper = ,#1D0A0E" >> ~/.config/hypr/hyprpaper.conf
-```
-
-Or comment out hyprpaper in ~/.config/hypr/hyprland.conf
-EOF
-
-echo "Phrolova theme configs deployed to /etc/skel"
