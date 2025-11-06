@@ -4,24 +4,22 @@ set -ouex pipefail
 
 ### Remove Bloat/Unused Packages
 
-# Remove Waydroid (Android container support)
-rpm-ostree override remove waydroid || true
+# Remove Waydroid (Android container support) - including selinux package
+rpm-ostree override remove waydroid waydroid-selinux || true
 
-# Remove Emulators
+# Remove Emulators (only remove if they exist)
 rpm-ostree override remove \
     retroarch \
     dolphin-emu \
     pcsx2 \
     duckstation \
     ppsspp \
-    cemu \
     snes9x \
     nestopia \
     || true
 
-# Remove VR Support
+# Remove VR Support (only remove if they exist)
 rpm-ostree override remove \
-    monado \
     openxr \
     || true
 
@@ -37,6 +35,10 @@ dnf5 install -y tmux
 
 ### Hyprland Rice Setup
 
+# Enable Hyprland COPR repository
+dnf5 -y copr enable solopasha/hyprland
+dnf5 -y copr enable erikreider/SwayNotificationCenter
+
 # Core Hyprland components
 dnf5 install -y \
     hyprland \
@@ -44,6 +46,10 @@ dnf5 install -y \
     hypridle \
     hyprlock \
     xdg-desktop-portal-hyprland
+
+# Disable COPRs so they don't end up enabled on the final image
+dnf5 -y copr disable solopasha/hyprland
+dnf5 -y copr disable erikreider/SwayNotificationCenter
 
 # Status bar & launcher
 dnf5 install -y \
