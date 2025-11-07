@@ -35,7 +35,6 @@ rpm-ostree override remove \
     kde-connect \
     plasma-discover \
     plasma-desktop \
-    sddm-kcm \
     || true
 
 # Remove Handheld and Emulator Stuff
@@ -119,7 +118,8 @@ dnf5 install -y \
     playerctl \
     pavucontrol \
     network-manager-applet \
-    blueman
+    blueman \
+    lxqt-policykit
 
 # Fonts for rice (these are likely already installed in bazzite-dx, install extra if available)
 dnf5 install -y \
