@@ -32,7 +32,6 @@ rpm-ostree override remove \
     kwrite \
     konsole-part \
     ark \
-    gwenview \
     okular \
     || true
 
@@ -40,7 +39,6 @@ rpm-ostree override remove \
 rpm-ostree override remove \
     hhd \
     rom-properties-kf6 \
-    rom-properties-gtk3 \
     || true
 
 # Remove Fcitx5 and Input Remapper
@@ -58,7 +56,6 @@ rpm-ostree override remove waydroid waydroid-selinux || true
 # Remove Emulators (only remove if they exist)
 rpm-ostree override remove \
     retroarch \
-    pcsx2 \
     ppsspp \
     snes9x \
     || true
@@ -74,7 +71,8 @@ rpm-ostree override remove \
 
 # Basic utilities
 dnf5 install -y tmux \
-    fish
+    fish \
+    firefox
 
 ### Hyprland Rice Setup
 
@@ -108,7 +106,8 @@ dnf5 install -y \
     wl-clipboard \
     grim \
     slurp \
-    swappy
+    swappy \
+    xdg-utils
 
 # Notifications
 dnf5 install -y mako
@@ -150,8 +149,9 @@ dnf5 install -y \
 systemctl enable podman.socket
 
 # Set fish as default shell
-chsh -s /usr/bin/fish root
+usermod -s /usr/bin/fish root
 echo "SHELL=/usr/bin/fish" >> /etc/environment
+xdg-settings set default-web-browser firefox.desktop
 
 
 
