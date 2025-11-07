@@ -32,6 +32,10 @@ rpm-ostree override remove \
     kwrite \
     konsole-part \
     ark \
+    kde-connect \
+    plasma-discover \
+    plasma-desktop \
+    sddm-kcm \
     || true
 
 # Remove Handheld and Emulator Stuff
@@ -127,7 +131,6 @@ dnf5 install -y \
 # File manager & viewers (using Dolphin from KDE)
 dnf5 -y copr enable lihaohong/yazi
 dnf5 install -y \
-    dolphin \
     imv \
     mpv \
     zathura \
