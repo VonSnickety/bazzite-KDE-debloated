@@ -90,7 +90,10 @@ dnf5 install -y \
     hyprutils \
     xdg-desktop-portal-hyprland
 
-# Display manager
+# Display manager - Enable regreet COPR repository
+dnf5 -y copr enable psoldunov/regreet
+
+# Install display manager components
 dnf5 install -y greetd regreet cage
 
 # Remove SDDM's display-manager symlink if it exists
@@ -133,6 +136,8 @@ EOF
 
 # Disable COPRs so they don't end up enabled on the final image
 dnf5 -y copr disable solopasha/hyprland
+dnf5 -y copr disable psoldunov/regreet
+dnf5 -y copr disable lihaohong/yazi
 
 # Status bar & launcher
 dnf5 install -y \
