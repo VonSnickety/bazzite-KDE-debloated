@@ -87,7 +87,8 @@ rpm-ostree override remove \
 # Basic utilities
 dnf5 install -y tmux \
     firefox \
-    fish
+    fish \
+    fastfetch
 
 ### Hyprland Rice Setup
 
@@ -151,7 +152,7 @@ dnf5 install -y \
     fontawesome-fonts-all \
     || true
 
-# File manager & viewers (using Dolphin from KDE)
+# File manager & viewers
 dnf5 -y copr enable lihaohong/yazi
 dnf5 install -y \
     imv \
@@ -179,6 +180,14 @@ fi
 if dnf5 copr list | grep -q "lihaohong/yazi"; then
     dnf5 -y copr disable lihaohong/yazi
 fi
+
+### Deploy User Configuration Files
+
+# Copy skeleton files to /etc/skel for new users
+cp -r /ctx/skel/. /etc/skel/
+
+# Set proper permissions
+chmod -R 755 /etc/skel/.config
 
 #### System Services
 
