@@ -13,12 +13,9 @@ rpm-ostree override remove \
     pcsx2 \
     ppsspp \
     snes9x \
-    nestopia \
     || true
 
-# Remove VR Support (only remove if they exist)
-rpm-ostree override remove \
-    || true
+
 
 ### Install packages
 
