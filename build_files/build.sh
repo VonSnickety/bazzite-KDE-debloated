@@ -4,18 +4,27 @@ set -ouex pipefail
 
 ### Remove Bloat/Unused Packages
 
-# Remove Printing/Scanning, GNOME, VLC, and Fingerprint support
+# Remove Printing/Scanning
 rpm-ostree override remove \
     cups \
     cups-browsed \
     cups-filters \
     hplip \
     sane-backends \
+    iscan \
+    xsane \
+    bluez-cups \
+    || true
+
+# Remove GNOME utilities
+rpm-ostree override remove \
     gnome-disk-utility \
+    || true
+
+# Remove VLC
+rpm-ostree override remove \
     vlc-libs \
     vlc-plugins-base \
-    fprintd \
-    fprintd-pam \
     || true
 
 # Remove Accessibility Tools
@@ -23,30 +32,86 @@ rpm-ostree override remove \
     orca \
     espeak-ng \
     speech-dispatcher \
+    brltty \
     || true
 
-# Remove Extra KDE Apps (keep SDDM for display manager)
+# Remove Fingerprint support
 rpm-ostree override remove \
-    kate \
-    kwrite \
-    konsole-part \
-    ark \
-    kde-connect \
-    plasma-discover \
-    plasma-desktop \
-    dolphin \
-    kwallet \
-    kvantum \
-    kf5-frameworkintegration \
-    kf5-frameworkintegration-libs \
-    spectacle \
-    systemsettings \
+    fprintd \
+    fprintd-pam \
     || true
 
-# Remove Handheld and Emulator Stuff
+# Remove Handheld Hardware Support and Gaming Device Stuff
 rpm-ostree override remove \
     hhd \
+    hhd-ui \
+    adjustor \
+    powerbuttond \
+    jupiter-fan-control \
+    steam-powerbuttond \
+    steamdeck-kde-presets \
+    chimera \
+    || true
+
+# Remove GameScope (handheld/Steam Deck session)
+rpm-ostree override remove \
+    gamescope \
+    gamescope-session-plus \
+    gamescope-session-steam \
+    || true
+
+# Remove Emulators - ALL OF THEM
+rpm-ostree override remove \
+    retroarch \
+    retroarch-assets \
+    retroarch-filters \
+    retroarch-overlays \
+    snes9x \
+    dolphin-emu \
+    pcsx2 \
+    ppsspp \
+    rpcs3 \
+    cemu \
+    duckstation \
+    mgba \
+    mupen64plus \
+    redream \
+    emudeck \
+    retrodeck \
     rom-properties-kf6 \
+    pegasus-frontend \
+    || true
+
+# Remove all libretro cores
+rpm-ostree override remove \
+    libretro-* \
+    || true
+
+# Remove Gaming Launchers (keep Steam and Lutris only)
+rpm-ostree override remove \
+    heroic-games-launcher \
+    bottles \
+    || true
+
+# Remove Gaming Tools/Plugins (keep essentials like MangoHud, GameMode)
+rpm-ostree override remove \
+    decky-loader \
+    discover-overlay \
+    protonup-qt \
+    || true
+
+# Remove Streaming/Recording Software
+rpm-ostree override remove \
+    obs-studio \
+    obs-vkcapture \
+    sunshine \
+    moonlight-qt \
+    || true
+
+# Remove Waydroid (Android container support)
+rpm-ostree override remove \
+    waydroid \
+    waydroid-selinux \
     || true
 
 # Remove Fcitx5 and Input Remapper
@@ -59,59 +124,88 @@ rpm-ostree override remove \
     input-remapper \
     || true
 
-# Remove Waydroid (Android container support) - including selinux package
-rpm-ostree override remove waydroid waydroid-selinux || true
-
-# Remove Emulators (only remove if they exist)
-rpm-ostree override remove \
-    retroarch \
-    snes9x \
-    || true
-
-# Remove Btrfs Assistant and Sunshine
+# Remove Btrfs Assistant (unless you specifically use Btrfs snapshots)
 rpm-ostree override remove \
     btrfs-assistant \
-    sunshine \
     || true
 
-
-
-### Install packages
-
-# Packages can be installed from any enabled yum repo on the image.
-# RPMfusion repos are available by default in ublue main images
-# List of rpmfusion packages can be found here:
-# https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/39/x86_64/repoview/index.html&protocol=https&redirect=1
-
-# Basic utilities
-dnf5 install -y tmux \
-    firefox \
-    fish \
-    fastfetch
-
-### Hyprland Rice Setup
-
-# Enable Hyprland COPR repository
-dnf5 -y copr enable solopasha/hyprland
-
-# Core Hyprland components
-dnf5 install -y \
+# Remove Hyprland and tiling WM components (switching to KDE)
+rpm-ostree override remove \
     hyprland \
     hyprpaper \
     hypridle \
     hyprlock \
     hyprutils \
-    xdg-desktop-portal-hyprland
+    xdg-desktop-portal-hyprland \
+    waybar \
+    rofi-wayland \
+    mako \
+    || true
 
-# Configure SDDM (already installed in base image)
-# Create Hyprland session file for SDDM
+# Remove extra KDE apps we don't want (we'll install minimal KDE below)
+rpm-ostree override remove \
+    kate \
+    kwrite \
+    konsole-part \
+    kde-connect \
+    plasma-discover \
+    kwallet \
+    kvantum \
+    kf5-frameworkintegration \
+    kf5-frameworkintegration-libs \
+    || true
+
+
+### Install Essential Packages
+
+# Basic utilities
+dnf5 install -y \
+    tmux \
+    firefox \
+    fastfetch
+
+### Install Minimal KDE Plasma Desktop
+
+# Core KDE Plasma components
+dnf5 install -y \
+    plasma-desktop \
+    plasma-workspace \
+    plasma-systemsettings \
+    kwin \
+    kwin-wayland \
+    kscreen \
+    powerdevil \
+    plasma-pa \
+    plasma-nm \
+    bluedevil
+
+# Minimal KDE Applications (only essentials)
+dnf5 install -y \
+    dolphin \
+    konsole \
+    ark \
+    spectacle
+
+# KDE Integration
+dnf5 install -y \
+    kde-gtk-config \
+    plasma-integration \
+    xdg-desktop-portal-kde
+
+# Ensure SDDM is installed and configured for KDE
+dnf5 install -y sddm
+
+# Create KDE Plasma Wayland session file for SDDM
 mkdir -p /usr/share/wayland-sessions
-cat > /usr/share/wayland-sessions/hyprland.desktop << 'EOF'
+cat > /usr/share/wayland-sessions/plasmawayland.desktop << 'EOF'
 [Desktop Entry]
-Name=Hyprland
-Comment=An intelligent dynamic tiling Wayland compositor
-Exec=Hyprland
+Name=Plasma (Wayland)
+Comment=KDE Plasma Wayland session
+Exec=/usr/bin/startplasma-wayland
+TryExec=/usr/bin/startplasma-wayland
 Type=Application
+DesktopNames=KDE
+X-KDE-PluginInfo-Version=6.0
 EOF
 
 # Configure SDDM for Wayland session
@@ -124,93 +218,24 @@ InputMethod=
 SessionDir=/usr/share/wayland-sessions
 EOF
 
-# Ensure SDDM is enabled (should already be enabled in base image)
+# Ensure SDDM is enabled
 systemctl enable sddm.service
 
-# Status bar & launcher
-dnf5 install -y \
-    waybar \
-    rofi-wayland
+### System Services
 
-# Terminal emulator
-dnf5 install -y kitty
+# Enable podman socket (useful for containers)
+systemctl enable podman.socket
 
-# Essential Wayland utilities (removed cliphist, wf-recorder - not in Fedora repos)
-dnf5 install -y \
-    wl-clipboard \
-    grim \
-    slurp \
-    swappy \
-    xdg-utils
+# Set graphical target
+systemctl set-default graphical.target
 
-# Notifications
-dnf5 install -y mako
-
-# System utilities
-dnf5 install -y \
-    brightnessctl \
-    playerctl \
-    pavucontrol \
-    network-manager-applet \
-    blueman \
-    lxqt-policykit
-
-# Fonts for rice (these are likely already installed in bazzite-dx, install extra if available)
-dnf5 install -y \
-    fira-code-fonts \
-    jetbrains-mono-fonts-all \
-    fontawesome-fonts-all \
-    || true
-
-# File manager & viewers
-dnf5 -y copr enable lihaohong/yazi
-dnf5 install -y \
-    imv \
-    mpv \
-    zathura \
-    zathura-pdf-mupdf \
-    yazi
-
-# Theme engines
-dnf5 install -y \
-    qt5ct \
-    qt6ct \
-    papirus-icon-theme
-
-# Disable all COPRs so they don't end up enabled on the final image
-# Check if solopasha/hyprland COPR is enabled before disabling
-if dnf5 copr list | grep -q "solopasha/hyprland"; then
-    dnf5 -y copr disable solopasha/hyprland
-fi
-# Check if lihaohong/yazi COPR is enabled before disabling
-if dnf5 copr list | grep -q "lihaohong/yazi"; then
-    dnf5 -y copr disable lihaohong/yazi
-fi
 
 ### Deploy User Configuration Files
 
 # Copy skeleton files to /etc/skel for new users
-cp -r /ctx/skel/. /etc/skel/
+# Note: Most Hyprland configs will be removed, KDE uses its own defaults
+cp -r /ctx/skel/. /etc/skel/ || true
 
 # Set proper permissions
-chmod -R 755 /etc/skel/.config
-
-#### System Services
-
-systemctl enable podman.socket
-
-# Set fish as default shell for all users
-# First, ensure fish is in /etc/shells (dnf should handle this, but just in case)
-grep -q '/usr/bin/fish' /etc/shells || echo '/usr/bin/fish' >> /etc/shells
-
-# Set fish as default shell for root
-usermod -s /usr/bin/fish root
-
-# Set fish as the default shell for new users by modifying useradd defaults
-sed -i 's|SHELL=.*|SHELL=/usr/bin/fish|' /etc/default/useradd || echo "SHELL=/usr/bin/fish" >> /etc/default/useradd
-
-# Set SHELL environment variable globally
-echo "SHELL=/usr/bin/fish" >> /etc/environment
-
-
+chmod -R 755 /etc/skel/.config 2>/dev/null || true
 
