@@ -1,3 +1,5 @@
+# THIS IS WIP, A LITTLE BROKEN!!
+
 # Bazzite KDE Debloated
 
 A minimal, debloated KDE Plasma desktop built on Bazzite-DX, optimized for desktop gaming and development without the bloat.
